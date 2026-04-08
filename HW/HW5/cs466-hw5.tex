@@ -11,6 +11,7 @@
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \usepackage{fancyhdr}
 
 \def\shownotes{0}   % set 1 for version with author notes
@@ -136,6 +137,57 @@ explain why the two messages are distinct.
 Analyze $\mathbf{Adv}^{\mathrm{cr}}_H(A)$  and
 state the resource usage of $A$.
 
+\begin{algorithm}[H]
+\caption{$A_H$}
+K is given\\
+M_1 \leftarrow 0^{128}\\
+c \leftarrow H_K(M_1)\\
+M_2 \leftarrow M_1 \| (c \oplus AES_K^{-1}(c))\\
+\Return (M_1, M_2)
+\end{algorithm}
+
+\\
+
+\noindent\textbf{Output:}
+
+\[M_1 = 0^{128}\]
+\[H_K(M_1) = AES_K(AES_K(C[0] \oplus 0^{128}) \oplus 0^{128}) = AES_K(AES_K(0^{128})) = c\]
+
+\[M_2 = M_1 \| (c \oplus AES_K^{-1}(c))\]
+\[H_K(M_2)\]
+
+When $i=1$:
+\[B[1] = AES_K(C[0] \oplus M_1) = AES_K(0^{128})\]
+\[C[1] = AES_K(B[1] \oplus 0^{128}) = AES_K(AES_K(0^{128})) = c\]
+
+When $i=2$:
+\[B[2] = AES_K(C[1] \oplus c \oplus AES_K^{-1}(c)) = AES_K(AES_K^{-1}(c)) = c\]
+\[C[2] = AES_K(B[2] \oplus c \oplus AES_K^{-1}(c)) = AES_K(AES_K^{-1}(c)) =  c\]
+
+\[H_K(M_1) = c = c = H_K(M_2)\]
+
+\noindent \textbf{Distinct}:
+
+\[M_1 = 0^{128}\] 
+
+\[M_2 = 0^{128} \| (H_K(M_1) \oplus AES_K^{-1}(H_K(M_1)))\]
+
+$M_1$ has one block, while $M_2$ has two blocks.
+
+\noindent \textbf{Advantage}:
+\[Adv_H^{cr}(A) = 1\]
+
+\[H_K(M_1) = c = c =H_K(M_2)\]
+
+where c = $AES_K(AES_K(0^{128}))$
+
+\noindent \textbf{Resource usage}:
+
+1-query $H_K$ + 1 evaluation $AES_K^{-1}$ + $O(1)$
+
+
+\newpage
+
 \medskip
 
 \noindent (Part B --- 50 points.)
@@ -173,5 +225,58 @@ Prove that $H_K(M_2) = H_K(M_1)$ for your choice of $M_2$, tracing
 through the full computation of $H_K$ on both inputs.
 Argue that $M_2 \neq M_1$ and that $M_2 \in D$.
 Finally, analyze $\mathbf{Adv}^{\mathrm{spr}}_H(A)$ and state the resource usage of $A$.
+
+
+\begin{algorithm}[H]
+\caption{$A_H$}
+K is given\\
+$M_1$ is given\\
+c \leftarrow H_K(M_1)\\
+M_2 \leftarrow M_1 \| (c \oplus AES_K^{-1}(c))\\
+\Return (M_2)
+\end{algorithm}
+
+\\
+
+\noindent\textbf{Output:}
+
+\[M_1 \text{ is given}\]
+\[H_K(M_1) = AES_K(AES_K(C[0] \oplus M_1) \oplus M_1) = AES_K(AES_K(M_1) \oplus M_1) = c\]
+
+\[M_2 = M_1 \| (c \oplus AES_K^{-1}(c))\]
+\[|M_1| = 128 \quad |c \oplus AES_K^{-1}(c)| = 128 \quad |M_2| = 256 \quad M_2 \in D\]
+\[H_K(M_2)\]
+
+When $i=1$:
+\[B[1] = AES_K(C[0] \oplus M_1) = AES_K(M_1)\]
+\[C[1] = AES_K(B[1] \oplus M_1) = AES_K(AES_K(M_1) \oplus M_1) = c\]
+
+When $i=2$:
+\[B[2] = AES_K(C[1] \oplus c \oplus AES_K^{-1}(c)) = AES_K(AES_K^{-1}(c)) = c\]
+\[C[2] = AES_K(B[2] \oplus c \oplus AES_K^{-1}(c)) = AES_K(AES_K^{-1}(c)) =  c\]
+
+\[H_K(M_1) = c = c = H_K(M_2)\]
+
+\noindent \textbf{Distinct}:
+
+\[M_1 \leftarrow \{0,1\}^{128}\] 
+
+\[M_2 = M_1 \| (H_K(M_1) \oplus AES_K^{-1}(H_K(M_1)))\]
+
+$M_1$ has one block, while $M_2$ has two blocks.
+
+\noindent \textbf{Advantage}:
+\[Adv_H^{spr}(A) = 1\]
+
+\[H_K(M_1) = c = c =H_K(M_2)\]
+
+where c = $AES_K(AES_K(M_1) \oplus M_1)$
+
+\noindent \textbf{Resource usage}:
+
+1-query $H_K$ + 1 evaluation $AES_K^{-1}$ + $O(1)$
+
+
+
 
 \end{document}
